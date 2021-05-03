@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import org.ode4j.math.DVector4;
 import org.ode4j.ode.internal.cpp4j.java.Ref;
 import org.ode4j.ode.internal.cpp4j.java.RefInt;
+import org.ode4j.ode.internal.trimesh.DxTriMeshData;
 
 /**
  *
@@ -47,7 +48,7 @@ public class DxGimpactData extends DxTriMeshData {
 //	boolean m_single;
 	private float[] m_Angles;
 
-    DxGimpactData()//dxTriMeshData()
+    public DxGimpactData()//dxTriMeshData()
 	{
 		m_Vertices=null;
 //		m_VertexStride = 12;
@@ -156,13 +157,16 @@ public class DxGimpactData extends DxTriMeshData {
 //#endif  // dTRIMESH_GIMPACT
 
 	@Override
-	public void preprocess() {
+	public boolean preprocess() {
 		m_Angles = new GimpactDataPreprocessor(this).buildAngles();
+		// TODO TZ-CHECK Remove this m,ethod?
+		return true;// (TZ): What else?
 	}
 
 	@Override
-	//void dxTriMeshData::UpdateData()
-	void UpdateData() {
+	public
+		//void dxTriMeshData::UpdateData()
+	void updateData() {
 		//  BVTree.Refit();
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException();
@@ -285,24 +289,24 @@ public class DxGimpactData extends DxTriMeshData {
 //	}
 
 
-	//void dGeomTriMeshDataGetBuffer(dTriMeshDataID g, unsigned char** buf, int* bufLen)
-	void dGeomTriMeshDataGetBuffer(Ref<Object> buf, RefInt bufLen)
-	{
-		buf.r = null;
-		bufLen.i = 0;
-		throw new UnsupportedOperationException();
-	}
-
-	//void dGeomTriMeshDataSetBuffer(dTriMeshDataID g, unsigned char* buf)
-	void dGeomTriMeshDataSetBuffer(Ref<Object> buf)
-	{
-		//g->UseFlags = buf;
-		throw new UnsupportedOperationException();
-	}
+	//	//void dGeomTriMeshDataGetBuffer(dTriMeshDataID g, unsigned char** buf, int* bufLen)
+	//	void dGeomTriMeshDataGetBuffer(Ref<Object> buf, RefInt bufLen)
+	//	{
+	//		buf.r = null;
+	//		bufLen.i = 0;
+	//		throw new UnsupportedOperationException();
+	//	}
+	//
+	//	//void dGeomTriMeshDataSetBuffer(dTriMeshDataID g, unsigned char* buf)
+	//	void dGeomTriMeshDataSetBuffer(Ref<Object> buf)
+	//	{
+	//		//g->UseFlags = buf;
+	//		throw new UnsupportedOperationException();
+	//	}
 	
 	
 	void dGeomTriMeshDataUpdate() {
-	    UpdateData();
+	    updateData();
 	}
 	
 

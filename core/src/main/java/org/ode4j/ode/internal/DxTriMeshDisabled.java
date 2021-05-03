@@ -28,17 +28,19 @@ import org.ode4j.math.DVector3;
 import org.ode4j.ode.DGeom;
 import org.ode4j.ode.DTriMesh;
 import org.ode4j.ode.DTriMeshData;
+import org.ode4j.ode.internal.trimesh.DxTriMesh;
+import org.ode4j.ode.internal.trimesh.DxTriMeshData;
 
-class DxTriMeshDisabled extends DxTriMesh {
+public class DxTriMeshDisabled extends DxTriMesh {
 
-	static class dxTriMeshDisabledData extends DxTriMeshData {
+	public static class dxTriMeshDisabledData extends DxTriMeshData {
 		@Override
-		public void preprocess() {
-			throw new UnsupportedOperationException();
+		public boolean preprocess() {
+			return true;
 		}
 
 		@Override
-		void UpdateData() {
+		public void updateData() {
 			throw new UnsupportedOperationException();
 		}
 
@@ -69,6 +71,11 @@ class DxTriMeshDisabled extends DxTriMesh {
 		}
 
 		@Override
+		public boolean preprocess2(int buildRequestFlags, long[] requestExtraData) {
+			return true;
+		}
+
+		@Override
 		public void build(float[] Vertices, int[] Indices) {
 			//dGeomTriMeshDataBuildSingle(Vertices, Indices);
 		}
@@ -82,7 +89,7 @@ class DxTriMeshDisabled extends DxTriMesh {
 	//dxTriMesh::dxTriMesh(dSpaceID Space, dTriMeshDataID Data) : dxGeom(Space, 1){ type = dTriMeshClass; }
 	public DxTriMeshDisabled(DxSpace space, DxTriMeshData data) //: dxGeom(Space, 1)
 	{ 
-		super(space);
+		super(space, data, null, null, null);
 		type = dTriMeshClass;
 	}
 	//dxTriMesh::~dxTriMesh(){}
@@ -94,7 +101,7 @@ class DxTriMeshDisabled extends DxTriMesh {
 
 	//void dxTriMesh::computeAABB() { dSetZero (aabb,6); }
 	@Override
-	void computeAABB() {
+    protected void computeAABB() {
 		_aabb.setZero();
 	}
 
@@ -110,8 +117,8 @@ class DxTriMeshDisabled extends DxTriMesh {
 	DTriMeshData dGeomTriMeshDataCreate() { return null; }
 	void dGeomTriMeshDataDestroy() {}
 
-	public void dGeomTriMeshDataSet(DTriMeshData g, int data_id, Object in_data) {}
-	public Object dGeomTriMeshDataGet(DTriMeshData g, int data_id) { return null; }
+	//	public void dGeomTriMeshDataSet(DTriMeshData g, int data_id, Object in_data) {}
+	//	public Object dGeomTriMeshDataGet(DTriMeshData g, int data_id) { return null; }
 
 	//ODE_API 
 	//void dGeomTriMeshSetLastTransform( DGeom g, DMatrix4 last_trans ) {}
@@ -143,9 +150,8 @@ class DxTriMeshDisabled extends DxTriMesh {
 	void dGeomTriMeshDataUpdate(DTriMeshData g) {}
 
 	@Override
-	void ClearTCCache() {
+	public void clearTCCache() {
 		// TODO Auto-generated method stub
-
 	}
 
 	@Override

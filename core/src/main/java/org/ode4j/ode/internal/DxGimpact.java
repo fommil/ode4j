@@ -40,6 +40,8 @@ import org.ode4j.ode.internal.gimpact.GimGeometry;
 import org.ode4j.ode.internal.gimpact.GimTrimesh;
 import org.ode4j.ode.internal.gimpact.GimGeometry.mat4f;
 import org.ode4j.ode.internal.gimpact.GimGeometry.vec3f;
+import org.ode4j.ode.internal.trimesh.DxTriMesh;
+import org.ode4j.ode.internal.trimesh.DxTriMeshData;
 
 /**
  * 
@@ -51,6 +53,12 @@ public class DxGimpact extends DxTriMesh {
 	DxGimpactData _Data;
 
 	GimTrimesh m_collision_trimesh;
+
+	// TODO TZ_CHECK This (using bool in Java) conflicts with the Trimes/TriBase implementation that uses the C++
+	//    with CEnum
+	private boolean doSphereTC = true;
+	private boolean doBoxTC = true;
+	private boolean doCapsuleTC = true;
 
 
 	//void dGeomTriMeshSetLastTransform( DMatrix4 last_trans ) { //stub
@@ -97,16 +105,29 @@ public class DxGimpact extends DxTriMesh {
 
 	// Trimesh
 
-	//dxTriMesh::dxTriMesh(dSpaceID Space, dTriMeshDataID Data) : dxGeom(Space, 1){
-	DxGimpact(DxSpace Space, DxGimpactData Data) { 
-		super(Space);
+	// TODO TZ_CHECK
+	// TODO TZ_CHECK
+	// TODO TZ_CHECK
+	// TODO TZ_CHECK
+	// TODO TZ_CHECK
+	// TODO TZ_CHECK
+	// TODO TZ_CHECK The following are DxTrimesh:: methods, they should be move to DxTrimesh!!!
+	// TODO TZ_CHECK This also helpw with the callbacks and booleans in the constructor +getters + setters
+	// TODO TZ_CHECK
+	// TODO TZ_CHECK
+
+		//dxTriMesh::dxTriMesh(dSpaceID Space, dTriMeshDataID Data) : dxGeom(Space, 1){
+        public DxGimpact(DxSpace Space, DxGimpactData Data) {
+		// TODO TZ-CHECK I inserted 'null' here, are we using Data?
+		// TODO TZ-CHECK I inserted 'null' here, are we using the Callbacks?
+		super(Space, Data, null, null, null);
 		_Data = Data;
 		type = dTriMeshClass;
 
-		Callback = null;
-		ArrayCallback = null;
-		RayCallback = null;
-		TriMergeCallback = null; // Not initialized in dCreateTriMesh
+		setCallback(null);
+		setArrayCallback(null);
+		setRayCallback(null);
+		setTriMergeCallback(null); // Not initialized in dCreateTriMesh
 
 //		for (int i=0; i < m_buffer_managers.length; i++) { 
 //			m_buffer_managers[i] = new GBUFFER_MANAGER_DATA(); 
@@ -136,7 +157,7 @@ public class DxGimpact extends DxTriMesh {
 
 	@Override
 	//void dxTriMesh::ClearTCCache(){
-	void ClearTCCache(){
+	public void clearTCCache(){
 
 	}
 
@@ -148,7 +169,8 @@ public class DxGimpact extends DxTriMesh {
 
 
 	@Override
-	//void dxTriMesh::computeAABB()
+    protected
+        //void dxTriMesh::computeAABB()
 	void computeAABB()
 	{
 		//update trimesh transform
@@ -188,56 +210,56 @@ public class DxGimpact extends DxTriMesh {
 	void dGeomTriMeshSetCallback(DTriCallback Callback)
 	{
 		//dUASSERT(g && g->type == dTriMeshClass, "argument not a trimesh");
-		this.Callback = Callback;
+		this.m_Callback = Callback;
 	}
 
 	//dTriCallback* dGeomTriMeshGetCallback(dGeomID g)
 	DTriCallback dGeomTriMeshGetCallback()
 	{
 		//dUASSERT(g && g->type == dTriMeshClass, "argument not a trimesh");
-		return Callback;
+		return m_Callback;
 	}
 
 	//void dGeomTriMeshSetArrayCallback(dGeomID g, dTriArrayCallback* ArrayCallback)
 	void dGeomTriMeshSetArrayCallback(DTriArrayCallback ArrayCallback)
 	{
 		//dUASSERT(g && g->type == dTriMeshClass, "argument not a trimesh");
-		this.ArrayCallback = ArrayCallback;
+		this.m_ArrayCallback = ArrayCallback;
 	}
 
 	//dTriArrayCallback* dGeomTriMeshGetArrayCallback(dGeomID g)
 	DTriArrayCallback dGeomTriMeshGetArrayCallback()
 	{
 		//dUASSERT(g && g->type == dTriMeshClass, "argument not a trimesh");
-		return ArrayCallback;
+		return m_ArrayCallback;
 	}
 
 	//void dGeomTriMeshSetRayCallback(dGeomID g, dTriRayCallback* Callback)
 	void dGeomTriMeshSetRayCallback(DTriRayCallback Callback)
 	{
 		//dUASSERT(g && g->type == dTriMeshClass, "argument not a trimesh");
-		this.RayCallback = Callback;
+		this.m_RayCallback = Callback;
 	}
 
 	//dTriRayCallback* dGeomTriMeshGetRayCallback(dGeomID g)
 	DTriRayCallback dGeomTriMeshGetRayCallback()
 	{
 		//dUASSERT(g && g->type == dTriMeshClass, "argument not a trimesh");
-		return RayCallback;
+		return m_RayCallback;
 	}
 
 	//void dGeomTriMeshSetTriMergeCallback(dGeomID g, dTriTriMergeCallback* Callback)
 	void dGeomTriMeshSetTriMergeCallback(DTriTriMergeCallback Callback)
 	{
 		//dUASSERT(g && g->type == dTriMeshClass, "argument not a trimesh");
-		this.TriMergeCallback = Callback;
+		this.m_TriMergeCallback = Callback;
 	}
 
 	//dTriTriMergeCallback* dGeomTriMeshGetTriMergeCallback(dGeomID g)
 	DTriTriMergeCallback dGeomTriMeshGetTriMergeCallback()
 	{
 		//dUASSERT(g && g->type == dTriMeshClass, "argument not a trimesh");	
-		return TriMergeCallback;
+		return m_TriMergeCallback;
 	}
 
 	//void dGeomTriMeshSetData(dGeomID g, dTriMeshDataID Data)
@@ -314,7 +336,7 @@ public class DxGimpact extends DxTriMesh {
 	}
 
 	void dGeomTriMeshClearTCCache(){
-		ClearTCCache();
+		clearTCCache();
 	}
 
 	/**
@@ -352,9 +374,10 @@ public class DxGimpact extends DxTriMesh {
 
 	//void dGeomTriMeshGetPoint(dGeomID g, int Index, dReal u, dReal v, dVector3 Out){
 	void dGeomTriMeshGetPoint(int Index, double u, double v, DVector3 Out){
-		vec3f[] dv = { new vec3f(), new vec3f(), new vec3f() };
+		//vec3f[] dv = { new vec3f(), new vec3f(), new vec3f() };
+		DVector3[] dv = { new DVector3(), new DVector3(), new DVector3() };
 		m_collision_trimesh.gim_trimesh_locks_work_data();	
-		m_collision_trimesh.gim_trimesh_get_triangle_vertices(Index, dv[0],dv[1],dv[2]);
+		m_collision_trimesh.gim_trimesh_get_triangle_vertices(Index, dv[0], dv[1], dv[2]);
 		DxGimpactCollision.GetPointFromBarycentric(dv, u, v, Out);
 		m_collision_trimesh.gim_trimesh_unlocks_work_data();
 	}
